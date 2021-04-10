@@ -5,12 +5,14 @@ class Options():
     def __init__(self):
         self.parser = argparse.ArgumentParser()
 
+        self.parser.add_argument('--dataset_path', type=str, default='D:/user/dataset/mvtec_anomaly_detection')
         self.parser.add_argument('--name', type=str, default='leather')
         self.parser.add_argument('--train_data_dir', type=str, default=None)
         self.parser.add_argument('--test_dir', type=str, default=None)
         self.parser.add_argument('--sub_folder', type=list, nargs='*', default=None)
         self.parser.add_argument('--do_aug', action='store_true', help='whether to do data augmentation before training')
         self.parser.add_argument('--aug_dir', type=str, default=None)
+        self.parser.add_argument('--model_dir', type=str, default=None)
         self.parser.add_argument('--chechpoint_dir', type=str, default=None)
         self.parser.add_argument('--save_dir', type=str, default=None)
 
@@ -43,22 +45,25 @@ class Options():
         self.parser.add_argument('--bg_mask', type=str, default=None, help='background mask, B means black, W means white')
 
     def parse(self):
-        DATASET_PATH = 'D:/user/dataset/mvtec_anomaly_detection'
         self.opt = self.parser.parse_args()
 
         if not self.opt.train_data_dir:
-            self.opt.train_data_dir = DATASET_PATH+'/'+self.opt.name+'/train/good'
+            self.opt.train_data_dir = self.opt.dataset_path+'/'+self.opt.name+'/train/good'
         if not self.opt.test_dir:
-            self.opt.test_dir = DATASET_PATH+'/'+self.opt.name+'/test'
+            self.opt.test_dir = self.opt.dataset_path+'/'+self.opt.name+'/test'
         if not self.opt.sub_folder:
             self.opt.sub_folder = os.listdir(self.opt.test_dir)
         if not self.opt.aug_dir:
             self.opt.aug_dir = './train_patches/'+self.opt.name
+        if not self.opt.model_dir:
+            self.opt.model_dir = './results/'+self.opt.name+'/model_dir/'+self.opt.loss
         if not self.opt.chechpoint_dir:
             self.opt.chechpoint_dir = './results/'+self.opt.name+'/chechpoints/'+self.opt.loss
         if not self.opt.save_dir:
             self.opt.save_dir = './results/'+self.opt.name+'/reconst/ssim_l1_metric_'+self.opt.loss
 
+        if not os.path.exists(self.opt.model_dir):
+            os.makedirs(self.opt.model_dir)
         if not os.path.exists(self.opt.chechpoint_dir):
             os.makedirs(self.opt.chechpoint_dir)
         if not os.path.exists(self.opt.aug_dir):
