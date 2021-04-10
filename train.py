@@ -69,7 +69,7 @@ autoencoder.summary()
 
 earlystopping = EarlyStopping(patience=20)
 
-checkpoint = ModelCheckpoint(os.path.join(cfg.chechpoint_dir, '{epoch:02d}-{val_loss:.5f}.hdf5'), save_best_only=True,
+checkpoint = ModelCheckpoint(os.path.join(cfg.chechpoint_dir, '{epoch:d}-{val_loss:.5f}.hdf5'), save_best_only=True,
                             period=1, mode='auto', verbose=1, save_weights_only=True)
 
 autoencoder.fit(data_train, epochs=cfg.epochs, validation_data=data_valid, callbacks=[checkpoint, earlystopping])
