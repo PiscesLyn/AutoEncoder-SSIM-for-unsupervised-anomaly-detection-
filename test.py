@@ -58,7 +58,7 @@ def get_residual_map(img_path, cfg):
 
 def get_threshold(cfg):
     print('estimating threshold...')
-    valid_good_list = glob(cfg.train_data_dir + '/*png')
+    valid_good_list = glob(cfg.train_data_dir + '/*')
     num_valid_data = int(np.ceil(len(valid_good_list) * 0.2))
     total_rec_ssim, total_rec_l1 = [], []
     for img_path in valid_good_list[-num_valid_data:]:
