@@ -74,6 +74,8 @@ checkpoint = ModelCheckpoint(os.path.join(cfg.chechpoint_dir, '{epoch:02d}-{val_
 
 autoencoder.fit(data_train, epochs=cfg.epochs, validation_data=data_valid, callbacks=[checkpoint, earlystopping])
 
+autoencoder.save(cfg.model_dir)
+
 # show reconstructed images
 decoded_imgs = autoencoder.predict(data_valid)
 n = len(decoded_imgs)
