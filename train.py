@@ -36,7 +36,7 @@ if cfg.aug_dir and cfg.do_aug:
     augment_images(img_list, cfg)
 
 dataset_dir = cfg.aug_dir if cfg.aug_dir else cfg.train_data_dir
-file_list = glob(dataset_dir + '/*')
+file_list = glob(str(dataset_dir / '*'))
 num_valid_data = int(np.ceil(len(file_list) * 0.2))
 data_train = data_flow(file_list[:-num_valid_data], cfg.batch_size, cfg.grayscale)
 data_valid = data_flow(file_list[-num_valid_data:], cfg.batch_size, cfg.grayscale)
@@ -79,9 +79,9 @@ autoencoder.save(cfg.model_dir)
 # show reconstructed images
 decoded_imgs = autoencoder.predict(data_valid)
 n = len(decoded_imgs)
-save_snapshot_dir = cfg.chechpoint_dir +'/snapshot/'
+save_snapshot_dir = cfg.chechpoint_dir / 'snapshot'
 if not os.path.exists(save_snapshot_dir):
     os.makedirs(save_snapshot_dir)
 for i in range(n):
-    cv2.imwrite(save_snapshot_dir+str(i)+'_rec_valid.png', (decoded_imgs[i]*255).astype('uint8'))
+    cv2.imwrite(str(save_snapshot_dir / (str(i)+'_rec_valid.png')), (decoded_imgs[i]*255).astype('uint8'))
 

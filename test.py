@@ -8,7 +8,7 @@ import os
 from utils import read_img, get_patch, patch2img, set_img_color, bg_mask
 from network import AutoEncoder
 from options import Options
-
+from pathlib import Path
 
 cfg = Options().parse()
 
@@ -16,12 +16,12 @@ cfg = Options().parse()
 autoencoder = AutoEncoder(cfg)
 
 if cfg.weight_file:
-    autoencoder.load_weights(cfg.chechpoint_dir + '/' + cfg.weight_file)
+    autoencoder.load_weights(str(cfg.chechpoint_dir / cfg.weight_file))
 else:
     file_list = os.listdir(cfg.chechpoint_dir)
     latest_epoch = max([int(i.split('-')[0]) for i in file_list if 'hdf5' in i])
     print('load latest weight file: ', latest_epoch)
-    autoencoder.load_weights(glob(cfg.chechpoint_dir + '/' + str(latest_epoch) + '*.hdf5')[0])
+    autoencoder.load_weights(glob(str(cfg.chechpoint_dir / (str(latest_epoch) + '*.hdf5')))[0])
 #autoencoder.summary()
 
 def get_residual_map(img_path, cfg):
@@ -58,7 +58,7 @@ def get_residual_map(img_path, cfg):
 
 def get_threshold(cfg):
     print('estimating threshold...')
-    valid_good_list = glob(cfg.train_data_dir + '/*')
+    valid_good_list = glob(str(cfg.train_data_dir / '*'))
     num_valid_data = int(np.ceil(len(valid_good_list) * 0.2))
     total_rec_ssim, total_rec_l1 = [], []
     for img_path in valid_good_list[-num_valid_data:]:
@@ -84,7 +84,7 @@ def get_depressing_mask(cfg):
 
 def get_results(file_list, cfg):
     for img_path in file_list:
-        img_name = img_path.split('\\')[-1][:-4]
+        img_name = Path(img_path).stem 
         c = '' if not cfg.sub_folder else k
         test_img, rec_img, ssim_residual_map, l1_residual_map = get_residual_map(img_path, cfg)
 
@@ -107,10 +107,10 @@ def get_results(file_list, cfg):
 
         vis_img = set_img_color(test_img.copy(), mask, weight_foreground=0.3, grayscale=cfg.grayscale)
 
-        cv2.imwrite(cfg.save_dir+'/'+c+'_'+img_name+'_residual.png', mask)
-        cv2.imwrite(cfg.save_dir+'/'+c+'_'+img_name+'_origin.png', test_img)
-        cv2.imwrite(cfg.save_dir+'/'+c+'_'+img_name+'_rec.png', rec_img)
-        cv2.imwrite(cfg.save_dir+'/'+c+'_'+img_name+'_visual.png', vis_img)
+        cv2.imwrite(str(cfg.save_dir / (c+'_'+img_name+'_residual.png')), mask)
+        cv2.imwrite(str(cfg.save_dir / (c+'_'+img_name+'_origin.png')), test_img)
+        cv2.imwrite(str(cfg.save_dir / (c+'_'+img_name+'_rec.png')), rec_img)
+        cv2.imwrite(str(cfg.save_dir / (c+'_'+img_name+'_visual.png')), vis_img)
 
 
 if __name__ == '__main__':
@@ -121,8 +121,8 @@ if __name__ == '__main__':
 
     if cfg.sub_folder:
         for k in cfg.sub_folder:
-            test_list = glob(cfg.test_dir+'/'+k+'/*')
+            test_list = glob(str(cfg.test_dir / k / '*'))
             get_results(test_list, cfg)
     else:
-        test_list = glob(cfg.test_dir+'/*')
+        test_list = glob(str(cfg.test_dir / '*'))
         get_results(test_list, cfg)

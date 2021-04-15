@@ -60,7 +60,7 @@ def generate_image_list(args):
     random.shuffle(lucky_seq)
 
     img_list = [
-        (os.sep.join([args.train_data_dir, filename]), num_ave_aug+1 if lucky else num_ave_aug)
+        (os.sep.join([str(args.train_data_dir), filename]), num_ave_aug+1 if lucky else num_ave_aug)
         for filename, lucky in zip(filenames, lucky_seq)
     ]
 
@@ -106,7 +106,7 @@ def augment_images(filelist, args):
                 varied_imgname += 'v'
 
             output_filepath = os.sep.join([
-                args.aug_dir,
+                str(args.aug_dir),
                 '{}{}'.format(varied_imgname, ext)])
             cv2.imwrite(output_filepath, img_varied)
 
